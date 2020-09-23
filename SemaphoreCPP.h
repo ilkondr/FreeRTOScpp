@@ -73,7 +73,7 @@ public:
    * @brief Constructor.
    * @param name Name to give semaphore, used for Debug Registry if setup
    */
-  Semaphore(char const* name) {
+  Semaphore(char const* name) noexcept {
 #if( configSUPPORT_STATIC_ALLOCATION == 1 )
 	sema = xSemaphoreCreateBinaryStatic(&semaBuffer);
 #else
