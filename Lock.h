@@ -50,8 +50,9 @@ public:
 	Lockable() {}
 	virtual ~Lockable() {}
 
-	virtual bool take(TickType_t wait = portMAX_DELAY) = 0;
-	virtual bool give() = 0;
+	virtual bool lock() = 0;
+	virtual bool try_lock() = 0;
+	virtual bool unlock() = 0;
 private:
 #if __cplusplus < 201101L
     Lockable(Lockable const&);      ///< We are not copyable.
@@ -62,29 +63,5 @@ private:
 #endif // __cplusplus
 };
 
-/**
- * Class to hold a block based lock. (auto unlocks on in its destructor)
- * @ingroup FreeRTOSCpp
- */
-class Lock {
-public:
-	Lock(Lockable& mylockable, bool locked = true, TickType_t wait = portMAX_DELAY);
-	virtual ~Lock();
-
-	bool lock(TickType_t wait = portMAX_DELAY);
-	void unlock();
-	bool locked() const { return lockCnt > 0; }
-private:
-	Lockable& lockable;
-	int		lockCnt;
-
-#if __cplusplus < 201101L
-    Lock(Lock const&);      ///< We are not copyable.
-    void operator =(Lock const&);  ///< We are not assignable.
-#else
-    Lock(Lock const&) = delete;      ///< We are not copyable.
-    void operator =(Lock const&) = delete;  ///< We are not assignable.
-#endif // __cplusplus
-};
 
 #endif /* FREERTOS_FREERTOSPP_LOCK_H_ */

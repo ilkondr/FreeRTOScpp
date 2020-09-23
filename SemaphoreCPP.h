@@ -31,7 +31,7 @@
  *
  * This file contains a set of lightweight wrappers for semaphores using FreeRTOS
  *
- * @todo Add Counting Semaphores (Perhaps rename Semaphore to BinarySemaphore)
+ * @todo Add Counting Semaphores
  * @ingroup FreeRTOSCpp
  */
 #ifndef SEMAPHORE_CPP_H
@@ -46,7 +46,7 @@
  *
  * Example Usage:
  * @code
- * Semaphore sema("MySema");
+ * BinarySemaphore sema("MySema");
  *
  * // In some task
  * sema.give();
@@ -67,13 +67,13 @@
  * @ingroup FreeRTOSCpp
  */
 
-class Semaphore  : public Lockable {
+class BinarySemaphore {
 public:
   /**
    * @brief Constructor.
-   * @param name Name to give semaphore, used for Debug Registry if setup
+   * @param name Name to give BinarySemaphore, used for Debug Registry if setup
    */
-  Semaphore(char const* name) noexcept {
+  BinarySemaphore() noexcept {
 #if( configSUPPORT_STATIC_ALLOCATION == 1 )
 	sema = xSemaphoreCreateBinaryStatic(&semaBuffer);
 #else
@@ -89,8 +89,8 @@ public:
    *
    * Delete the semaphore.
    */
-  ~Semaphore() {
-    vQueueDelete(sema);
+  ~BinarySemaphore() {
+    vSemaphoreDelete(sema);
   }
   /**
    * @brief Give the Semaphore.
@@ -121,11 +121,11 @@ private:
   SemaphoreHandle_t sema;
 
 #if __cplusplus < 201101L
-    Semaphore(Semaphore const&);      ///< We are not copyable.
-    void operator =(Semaphore const&);  ///< We are not assignable.
+    BinarySemaphore(BinarySemaphore const&);      ///< We are not copyable.
+    void operator =(BinarySemaphore const&);  ///< We are not assignable.
 #else
-    Semaphore(Semaphore const&) = delete;      ///< We are not copyable.
-    void operator =(Semaphore const&) = delete;  ///< We are not assignable.
+    BinarySemaphore(BinarySemaphore const&) = delete;      ///< We are not copyable.
+    void operator =(BinarySemaphore const&) = delete;  ///< We are not assignable.
 #endif // __cplusplus
 
 #if( configSUPPORT_STATIC_ALLOCATION == 1 )

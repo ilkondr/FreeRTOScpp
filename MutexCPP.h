@@ -66,20 +66,17 @@
  * @ingroup FreeRTOSCpp
  */
 
-class Mutex : public Lockable {
+class Mutex {
 public:
 	/**
 	 * @brief Constructor.
 	 * @param name Name to give mutex, used for Debug Registry if setup
 	 */
-	Mutex(char const* name) {
+	Mutex() noexcept {
 #if( configSUPPORT_STATIC_ALLOCATION == 1 )
 		mutexHandle = xSemaphoreCreateMutexStatic(&mutexBuffer);
 #else
 		mutexHandle = xSemaphoreCreateMutex();
-#endif
-#if configQUEUE_REGISTRY_SIZE > 0
-		vQueueAddToRegistry(mutexHandle, name);
 #endif
 	}
 	/**
@@ -91,11 +88,15 @@ public:
 		vSemaphoreDelete(mutexHandle);
 	}
 
-	bool take(TickType_t wait = portMAX_DELAY) {
-		return xSemaphoreTake(mutexHandle, wait);
+	bool lock() {
+		return xSemaphoreTake(mutexHandle, portMAX_DELAY);
 	}
 
-	bool give() {
+	bool try_lock() {
+		return xSemaphoreTake(mutexHandle, 0);
+	}
+
+	bool unlock() {
 		return xSemaphoreGive(mutexHandle);
 	}
 private:
@@ -146,28 +147,28 @@ private:
  * @ingroup FreeRTOSCpp
  */
 
-class RecursiveMutex : public Lockable{
+class RecursiveMutex {
 public:
-	RecursiveMutex(char const* name) {
+	RecursiveMutex() noexcept {
 #if( configSUPPORT_STATIC_ALLOCATION == 1 )
 		mutexHandle = xSemaphoreCreateRecursiveMutexStatic(&mutexBuffer);
 #else
 		mutexHandle = xSemaphoreCreateRecursiveMutex();
-#endif
-#if configQUEUE_REGISTRY_SIZE > 0
-		vQueueAddToRegistry(mutexHandle, name);
 #endif
 	}
 	~RecursiveMutex() {
 		vSemaphoreDelete(mutexHandle);
 	}
 
-	bool take(TickType_t wait = portMAX_DELAY) {
-		return xSemaphoreTakeRecursive(mutexHandle, wait);
-
+	bool lock() {
+		return xSemaphoreTakeRecursive(mutexHandle, portMAX_DELAY);
 	}
 
-	bool give() {
+	bool try_lock() {
+		return xSemaphoreTakeRecursive(mutexHandle, 0);
+	}
+
+	bool unlock() {
 		return xSemaphoreGiveRecursive(mutexHandle);
 	}
 
